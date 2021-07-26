@@ -20,7 +20,29 @@ Print messages:
 "Last record of calls, <incoming number> calls <answering number> at time <time>, lasting <during> seconds"
 """
 
+
+def performance_texts():
+    from time import time
+
+    sizes = range(1, len(texts) + 1)
+    times = list()
+
+    for size in sizes:
+        start = time()
+        solution = texts[0][0], texts[0][1], texts[0][2]
+        end = time()
+        times.append(end - start)
+    return sizes, times
+
+
 if __name__ == '__main__':
-    # print(texts)
+    from plot import plot
+
     print(f"First record of texts, {texts[0][0]} texts {texts[0][1]} at time {texts[0][2]}")
     print(f"Last record of calls, {calls[-1][0]} calls {calls[-1][1]} at time {calls[-1][2]}, lasting {calls[-1][3]} seconds")
+
+    n, t = performance_texts()
+    plot(n, t, loglog=True, interpolation=lambda x: 1)
+
+    #The runtime complexity is O(1)
+

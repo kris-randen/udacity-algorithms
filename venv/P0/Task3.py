@@ -62,12 +62,11 @@ def get_code(call, calling=True):
         return num.split()[0][:4]
 
 
-if __name__ == '__main__':
-    from pprint import pp
-
+# noinspection PyShadowingNames
+def solution(size):
     codes = dict()
     bangalore = '(080)'
-    for call in calls:
+    for call in calls[:size]:
         calling_code = get_code(call, calling=True)
         receiving_code = get_code(call, calling=False)
 
@@ -77,7 +76,6 @@ if __name__ == '__main__':
         receiving_dict.update({receiving_code: receiving_count + 1})
         codes[calling_code] = receiving_dict
     called_codes = sorted(list(codes.get(bangalore, dict()).keys()))
-    print(f"The numbers called by people in Bangalore have codes: {called_codes}")
 
     bangalore_codes = codes.get(bangalore, dict())
     total = 0
@@ -85,5 +83,34 @@ if __name__ == '__main__':
         total += count
     percentage = codes.get(bangalore, dict()).get(bangalore, 0) * 100 / total
 
+    return called_codes, percentage
+
+
+# noinspection PyShadowingNames
+def performance():
+    from time import  time
+
+    sizes = range(100, len(calls))
+    times = list()
+
+    for size in sizes:
+        start = time()
+        called_codes, percentage = solution(size)
+        end = time()
+        times.append(end - start)
+
+    return sizes, times
+
+
+if __name__ == '__main__':
+    from plot import plot
+
+    called_codes, percentage = solution(len(calls))
+    print(f"The numbers called by people in Bangalore have codes: {called_codes}")
     print(f"{percentage:.2f} percent of calls from fixed lines in Bangalore are calls to other fixed lines in Bangalore.")
+
+    n, t = performance()
+    plot(n, t, True, lambda x: x)
+
+    #The runtime complexity is O(n)
 

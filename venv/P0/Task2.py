@@ -20,14 +20,43 @@ Print a message:
 September 2016.".
 """
 
-if __name__ == '__main__':
+
+# noinspection PyShadowingNames
+def solution(size):
     from functools import reduce
 
     times = dict()
-    for call in calls:
+    for call in calls[:size]:
         time = int(call[-1])
         times[call[0]] = times.get(call[0], 0) + time
         times[call[1]] = times.get(call[1], 0) + time
     max = reduce(lambda x, y: x if x[1] > y[1] else y, times.items())
+    return max
+
+
+# noinspection PyShadowingNames
+def performance():
+    from time import time
+
+    sizes = range(100, len(calls))
+    times = list()
+
+    for size in sizes:
+        start = time()
+        max = solution(size)
+        end = time()
+        times.append(end - start)
+
+    return sizes, times
+
+
+if __name__ == '__main__':
+    from plot import plot
+
+    max = solution(len(calls))
     print(f"{max[0]} spent the longest time, {max[1]} seconds, on the phone during September 2016.")
 
+    n, t = performance()
+    plot(n, t, True, lambda x: x)
+
+    #The runtime complexity is O(n)
