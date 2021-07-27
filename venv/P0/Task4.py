@@ -64,7 +64,7 @@ def performance():
 if __name__ == '__main__':
     from plot import plot
 
-    telemarketers = solution(len(calls), len(texts))
+    telemarketers = sorted(list(solution(len(calls), len(texts))))
     nl = '\n'
     print(f"These numbers could be telemarketers: {nl + nl.join(list(telemarketers))}")
 

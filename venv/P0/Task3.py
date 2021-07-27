@@ -46,20 +46,30 @@ The percentage should have 2 decimal digits
 """
 
 
+class NumType:
+    LANDLINE = 'LANDLINE'
+    MOBILE = 'MOBILE'
+    MARKETING = 'MARKETING'
+    NONE = None
+
+    @staticmethod
+    def get(num):
+        if num[:3] == '140':
+            return NumType.MARKETING, num[:3]
+        elif num[0:2] == '(0':
+            end = num.find(')')
+            return NumType.LANDLINE, num[:end + 1]
+        elif num[0] in {'7', '8', '9'}:
+            return NumType.MOBILE, num.split()[0][:4]
+        else:
+            return NumType.NONE, None
+
+
 # noinspection PyShadowingNames
 def get_code(call, calling=True):
-    if calling:
-        num = call[0]
-    else:
-        num = call[1]
-
-    if num[:3] == '140':
-        return num[:3]
-    elif num[0] == '(':
-        end = num.find(')')
-        return num[:end+1]
-    else:
-        return num.split()[0][:4]
+    num = call[0] if calling else call[1]
+    num_type, code = NumType.get(num)
+    return code
 
 
 # noinspection PyShadowingNames
@@ -69,6 +79,9 @@ def solution(size):
     for call in calls[:size]:
         calling_code = get_code(call, calling=True)
         receiving_code = get_code(call, calling=False)
+
+        if calling_code is None or receiving_code is None:
+            continue
 
         receiving_dict = codes.get(calling_code, dict())
         receiving_count = receiving_dict.get(receiving_code, 0)
@@ -88,7 +101,7 @@ def solution(size):
 
 # noinspection PyShadowingNames
 def performance():
-    from time import  time
+    from time import time
 
     sizes = range(100, len(calls))
     times = list()
@@ -106,11 +119,10 @@ if __name__ == '__main__':
     from plot import plot
 
     called_codes, percentage = solution(len(calls))
-    print(f"The numbers called by people in Bangalore have codes: {called_codes}")
+    nl = '\n'
+    print(f"The numbers called by people in Bangalore have codes: {nl + nl.join(called_codes)}")
     print(f"{percentage:.2f} percent of calls from fixed lines in Bangalore are calls to other fixed lines in Bangalore.")
 
     n, t = performance()
     plot(n, t, True, lambda x: x)
-
-    #The runtime complexity is O(n)
 

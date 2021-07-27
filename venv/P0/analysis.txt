@@ -1,0 +1,37 @@
+Task 0
+------
+The runtime complexity is O(1).
+Note that no matter the size of texts and calls we only pick the
+first or the last elements from these lists.
+
+
+Task 1
+------
+The runtime complexity is O(n) where n is the size of texts + the size of calls
+Notice that the solution function does a constant number of operations
+for each text in texts and each call in calls.
+
+
+Task 2
+------
+The runtime complexity is O(n) where n is the size of calls.
+Also the main work is done by the solution function.
+Notice that for each call in calls it does a constant amount of work.
+
+
+Task 3
+------
+The runtime complexity is O(n) where n is the size of calls.
+Also the main work is done by the solution function.
+Notice that for each call in calls it does a constant amount of work.
+
+
+Task 4
+------
+The runtime complexity is O(n) where n is the size of texts + the size of calls
+Notice that the solution function does a constant number of operations
+for each text in texts and each call in calls.
+On top of this we are doing set union and difference operations.
+According to https://wiki.python.org/moin/TimeComplexity
+union s|t ~ O(len(s) + len(t)) and this is O(n)
+difference s|t ~ O(len(t)) which is also O(n)
