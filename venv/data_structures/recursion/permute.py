@@ -32,7 +32,7 @@ def permute(l):
     return perm
 
 
-def check_output(output, expected_output):
+def check(output, expected_output):
     """
     Return True if output and expected_output
     contains the same lists, False otherwise.
@@ -58,8 +58,8 @@ def check_output(output, expected_output):
 
 
 if __name__ == MAIN:
-    print("Pass" if (check_output(permute([]), [[]])) else "Fail")
-    print("Pass" if (check_output(permute([0]), [[0]])) else "Fail")
-    print("Pass" if (check_output(permute([0, 1]), [[0, 1], [1, 0]])) else "Fail")
-    print("Pass" if (check_output(permute([0, 1, 2]),
+    print("Pass" if (check(permute([]), [[]])) else "Fail")
+    print("Pass" if (check(permute([0]), [[0]])) else "Fail")
+    print("Pass" if (check(permute([0, 1]), [[0, 1], [1, 0]])) else "Fail")
+    print("Pass" if (check(permute([0, 1, 2]),
                                   [[0, 1, 2], [0, 2, 1], [1, 0, 2], [1, 2, 0], [2, 0, 1], [2, 1, 0]])) else "Fail")
