@@ -4,7 +4,7 @@ def deep_reverse(v):
     if not isinstance(v, list):
         return dp(v)
 
-    if len(v) == 0:
+    if not v:
         return []
 
     return [deep_reverse(v[-1])] + deep_reverse(v[:-1])

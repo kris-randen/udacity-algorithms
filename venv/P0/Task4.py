@@ -25,50 +25,49 @@ Print a message:
 The list of numbers should be print out one per line in lexicographic order with no duplicates.
 """
 
+MAIN, LINEAR, NL, PLOT = '__main__', lambda x: x, '\n', True
+
+
+def senders_receivers(items, size):
+    senders, receivers = set(), set()
+    for item in items[:size]:
+        senders.add(item[0])
+        receivers.add(item[1])
+    return senders, receivers
+
+
+def callers_callees(size):
+    return senders_receivers(calls, size)
+
+
+def texters_textees(size):
+    return senders_receivers(texts, size)
+
 
 # noinspection PyShadowingNames
 def solution(size_calls, size_texts):
-    nums_making_calls = set()
-    nums_receiving_calls = set()
-    for call in calls[:size_calls]:
-        nums_making_calls.add(call[0])
-        nums_receiving_calls.add(call[1])
+    callers, callees = callers_callees(size_calls)
+    texters, textees = texters_textees(size_texts)
+    return sorted(list(callers - set().union(texters, textees, callees)))
 
-    nums_sending_texts = set()
-    nums_receiving_texts = set()
-    for text in texts[:size_texts]:
-        nums_sending_texts.add(text[0])
-        nums_receiving_texts.add(text[1])
 
-    non_telemarketers = nums_sending_texts.union(nums_receiving_texts).union(nums_receiving_calls)
-    telemarketers = nums_making_calls.difference(non_telemarketers)
-    return telemarketers
+def time(size):
+    from time import time
+    start, _, end = time(), solution(size, size), time()
+    return end - start
 
 
 # noinspection PyShadowingNames
-def performance():
-    from time import time
-
-    sizes = range(100, min(len(calls), len(texts)))
-    times = list()
-
-    for size in sizes:
-        start = time()
-        telemarketers = solution(size, size)
-        end = time()
-        times.append(end - start)
-
-    return sizes, times
+def performance(s=100):
+    sizes = range(s, min(len(calls), len(texts)))
+    return sizes, [time(size) for size in sizes]
 
 
-if __name__ == '__main__':
-    from plot import plot
+if __name__ == MAIN:
+    marketers = solution(len(calls), len(texts))
+    print(f"These numbers could be telemarketers: {NL + NL.join(list(marketers))}")
 
-    telemarketers = sorted(list(solution(len(calls), len(texts))))
-    nl = '\n'
-    print(f"These numbers could be telemarketers: {nl + nl.join(list(telemarketers))}")
-
-    n, t = performance()
-    plot(n, t, True, lambda x: x)
-
-    #The runtime complexity is O(n)
+    if PLOT:
+        from plot import plot
+        n, t = performance()
+        plot(n, t, loglog=True, interpolation=LINEAR)

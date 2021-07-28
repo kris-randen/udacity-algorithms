@@ -45,84 +45,78 @@ to other fixed lines in Bangalore."
 The percentage should have 2 decimal digits
 """
 
-
-class NumType:
-    LANDLINE = 'LANDLINE'
-    MOBILE = 'MOBILE'
-    MARKETING = 'MARKETING'
-    NONE = None
-
-    @staticmethod
-    def get(num):
-        if num[:3] == '140':
-            return NumType.MARKETING, num[:3]
-        elif num[0:2] == '(0':
-            end = num.find(')')
-            return NumType.LANDLINE, num[:end + 1]
-        elif num[0] in {'7', '8', '9'}:
-            return NumType.MOBILE, num.split()[0][:4]
-        else:
-            return NumType.NONE, None
+from functools import reduce
+MAIN, LINEAR, NL, PLOT = '__main__', lambda x: x, '\n', True
 
 
 # noinspection PyShadowingNames
 def get_code(call, calling=True):
     num = call[0] if calling else call[1]
-    num_type, code = NumType.get(num)
-    return code
+    if num[:3] == '140':
+        return num[:3]
+    elif num[0:2] == '(0':
+        end = num.find(')')
+        return num[:end + 1]
+    elif num[0] in {'7', '8', '9'}:
+        return num.split()[0][:4]
+    else:
+        raise ValueError('Invalid number')
+
+
+def get_codes(call):
+    return get_code(call, calling=True), \
+           get_code(call, calling=False)
+
+
+def update(code_map, calling, receiving):
+    rec_dict = code_map.get(calling, dict())
+    count = rec_dict.get(receiving, 0)
+
+    rec_dict[receiving] = count + 1
+    code_map[calling] = rec_dict
+
+
+def get_percent(code_map, code):
+    codes = code_map.get(code, dict())
+    num = codes.get(code, 0)
+    return num * 100 / sum(codes.values())
+
+
+# noinspection PyShadowingNames
+def called_percent(code_map, code):
+    called = sorted(list(code_map.get(code, dict()).keys()))
+    percent = get_percent(code_map, code)
+    return called, percent
 
 
 # noinspection PyShadowingNames
 def solution(size):
-    codes = dict()
-    bangalore = '(080)'
+    code_map, blr = dict(), '(080)'
     for call in calls[:size]:
-        calling_code = get_code(call, calling=True)
-        receiving_code = get_code(call, calling=False)
+        called, received = get_codes(call)
+        if called and received:
+            update(code_map, called, received)
+    return called_percent(code_map, blr)
 
-        if calling_code is None or receiving_code is None:
-            continue
 
-        receiving_dict = codes.get(calling_code, dict())
-        receiving_count = receiving_dict.get(receiving_code, 0)
-
-        receiving_dict.update({receiving_code: receiving_count + 1})
-        codes[calling_code] = receiving_dict
-    called_codes = sorted(list(codes.get(bangalore, dict()).keys()))
-
-    bangalore_codes = codes.get(bangalore, dict())
-    total = 0
-    for code, count in bangalore_codes.items():
-        total += count
-    percentage = codes.get(bangalore, dict()).get(bangalore, 0) * 100 / total
-
-    return called_codes, percentage
+def time(size):
+    from time import time
+    start, _, end = time(), solution(size), time()
+    return end - start
 
 
 # noinspection PyShadowingNames
-def performance():
-    from time import time
-
-    sizes = range(100, len(calls))
-    times = list()
-
-    for size in sizes:
-        start = time()
-        called_codes, percentage = solution(size)
-        end = time()
-        times.append(end - start)
-
-    return sizes, times
+def performance(s=100):
+    sizes = range(s, len(calls))
+    return sizes, [time(size) for size in sizes]
 
 
-if __name__ == '__main__':
-    from plot import plot
-
-    called_codes, percentage = solution(len(calls))
-    nl = '\n'
-    print(f"The numbers called by people in Bangalore have codes: {nl + nl.join(called_codes)}")
+if __name__ == MAIN:
+    called, percentage = solution(len(calls))
+    print(f"The numbers called by people in Bangalore have codes: {NL + NL.join(called)}")
     print(f"{percentage:.2f} percent of calls from fixed lines in Bangalore are calls to other fixed lines in Bangalore.")
 
-    n, t = performance()
-    plot(n, t, True, lambda x: x)
-
+    if PLOT:
+        from plot import plot
+        n, t = performance()
+        plot(n, t, loglog=True, interpolation=LINEAR)

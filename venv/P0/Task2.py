@@ -20,43 +20,50 @@ Print a message:
 September 2016.".
 """
 
+MAIN, LINEAR, NL, PLOT = '__main__', lambda x: x, '\n', True
+
+
+# noinspection PyShadowingNames
+def increment_single(times, key, time):
+    times[key] = times.get(key, 0) + time
+
+
+def increment(times, keys, value):
+    for key in keys:
+        increment_single(times, key, value)
+
+
+def max_item(times):
+    from functools import reduce
+    return reduce(lambda x, y: x if x[1] > y[1] else y, times.items())
+
 
 # noinspection PyShadowingNames
 def solution(size):
-    from functools import reduce
-
     times = dict()
     for call in calls[:size]:
-        time = int(call[-1])
-        times[call[0]] = times.get(call[0], 0) + time
-        times[call[1]] = times.get(call[1], 0) + time
-    max = reduce(lambda x, y: x if x[1] > y[1] else y, times.items())
-    return max
+        caller, callee, time = call[0], call[1], int(call[-1])
+        increment(times, keys=[caller, callee], value=time)
+    return max_item(times)
+
+
+def time(size):
+    from time import time
+    start, _, end = time(), solution(size), time()
+    return end - start
 
 
 # noinspection PyShadowingNames
-def performance():
-    from time import time
-
-    sizes = range(100, len(calls))
-    times = list()
-
-    for size in sizes:
-        start = time()
-        max = solution(size)
-        end = time()
-        times.append(end - start)
-
-    return sizes, times
+def performance(s=100):
+    sizes = range(s, len(calls))
+    return sizes, [time(size) for size in sizes]
 
 
-if __name__ == '__main__':
-    from plot import plot
+if __name__ == MAIN:
+    num, max = solution(len(calls))
+    print(f"{num} spent the longest time, {max} seconds, on the phone during September 2016.")
 
-    max = solution(len(calls))
-    print(f"{max[0]} spent the longest time, {max[1]} seconds, on the phone during September 2016.")
-
-    n, t = performance()
-    plot(n, t, True, lambda x: x)
-
-    #The runtime complexity is O(n)
+    if PLOT:
+        from plot import plot
+        n, t = performance()
+        plot(n, t, loglog=True, interpolation=LINEAR)

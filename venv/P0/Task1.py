@@ -19,39 +19,36 @@ Print a message:
 "There are <count> different telephone numbers in the records."
 """
 
+MAIN, LINEAR, NL, PLOT = '__main__', lambda x: x, '\n', True
+
 
 # noinspection PyShadowingNames
-def solution(size_texts, size_calls):
+def solution(size_t, size_c):
     nums = set()
-    for text in texts[:size_texts]:
+    for text in texts[:size_t]:
         nums.update([text[0], text[1]])
-    for call in calls[:size_calls]:
+    for call in calls[:size_c]:
         nums.update([call[0], call[1]])
-    return nums
+    return len(nums)
+
+
+def time(size):
+    from time import time
+    start, _, end = time(), solution(size, size), time()
+    return end - start
 
 
 # noinspection PyShadowingNames
-def performance():
-    from time import time
-
-    min_size = min(len(texts), len(calls))
-    sizes = range(80, min_size)
-    times = list()
-
-    for size in sizes:
-        start = time()
-        nums = solution(size, size)
-        end = time()
-        times.append(end - start)
-    return sizes, times
+def performance(s=100):
+    sizes = range(s, min(len(texts), len(calls)))
+    return sizes, [time(size) for size in sizes]
 
 
-if __name__ == '__main__':
-    from plot import plot
+if __name__ == MAIN:
+    count = solution(size_t=len(texts), size_c=len(calls))
+    print(f"There are {count} different telephone numbers in the records.")
 
-    nums = solution(size_texts=len(texts), size_calls=len(calls))
-    print(f"There are {len(nums)} different telephone numbers in the records.")
-    n, t = performance()
-    plot(n, t, loglog=True, interpolation=lambda x: x)
-
-    #The runtime complexity is O(n)
+    if PLOT:
+        from plot import plot
+        n, t = performance()
+        plot(n, t, loglog=True, interpolation=LINEAR)

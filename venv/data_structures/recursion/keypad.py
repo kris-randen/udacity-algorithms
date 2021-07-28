@@ -1,5 +1,5 @@
 def get_characters(num):
-    if not 0 <= num <= 9:
+    if num not in range(10):
         raise ValueError(f'invalid digit {num}')
     chars = [
                 '',
@@ -12,7 +12,6 @@ def get_characters(num):
 
 def keypad(num):
     # TODO: Write your keypad solution here!
-
     if num // 10 == 0:
         return [''] if num == 0 else [char for char in get_characters(num)]
 

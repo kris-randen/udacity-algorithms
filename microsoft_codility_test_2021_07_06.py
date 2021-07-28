@@ -66,7 +66,6 @@ def gen_catalog(names, num=5):
 
 
 def check_instances(name, S):
-    from copy import deepcopy as dp
     max = 0
     S_set = list(S)
     num = 0
