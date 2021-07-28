@@ -30,7 +30,8 @@ def code(char):
 
 
 def codes(chars):
-    return ''.join(code(char) for char in chars if code(char))
+    code_list = [code(char) for char in chars]
+    return ''.join(code_list) if all(code_list) else None
 
 
 # noinspection PyShadowingNames
@@ -70,8 +71,12 @@ def all_codes(num):
     """
 
     tokens = get_tokens(list(str(num)))
-    return {codes(token) for token in tokens if codes(token)}
+    return sorted(
+                list(
+                        {codes(token) for token in tokens if codes(token)}
+                    )
+                 )
 
 
 if __name__ == MAIN:
-    print(all_codes(100023))
+    print(all_codes(145))
