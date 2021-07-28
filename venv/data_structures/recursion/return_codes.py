@@ -19,6 +19,9 @@ Return the codes in a list. The order of codes in the list is not important.
 
 Note: you can assume that the input number will not contain any 0s
 """
+
+from functools import reduce
+
 MAIN, NL = '__main__', '\n'
 
 
@@ -26,6 +29,11 @@ def code(char):
     return get_code(int(char))
 
 
+def codes(chars):
+    return ''.join(code(char) for char in chars if code(char))
+
+
+# noinspection PyShadowingNames
 def get_code(num):
     from string import ascii_lowercase
     n = 26
@@ -34,25 +42,36 @@ def get_code(num):
     return codes.get(num, None)
 
 
+def prefix(first, token):
+    token[0] = first + token[0]
+    return token
+
+
+def append(first, token):
+    return [first] + token
+
+
+# noinspection PyShadowingNames
+def get_tokens(chars):
+    if len(chars) < 2:
+        return [chars]
+
+    first, tokens = chars[0], get_tokens(chars[1:])
+    return [append(first, token) for token in tokens] + \
+           [prefix(first, token) for token in tokens]
+
+
+# noinspection PyShadowingNames
 def all_codes(num):
     """
     :param: number - input integer
     Return - list() of all codes possible for this number
     TODO: complete this method and return a list with all possible codes for the input number
     """
-    from random import randrange
 
-    string = str(num)
-    n = len(string)
-    index = 0
-    count = 0
-    chars = list()
-    while index < n and count < n-1:
-        k = 0
-        delta = randrange(k + 3)
-        char = string[index: index + delta + 1]
-
+    tokens = get_tokens(list(str(num)))
+    return {codes(token) for token in tokens if codes(token)}
 
 
 if __name__ == MAIN:
-    get_code(2)
+    print(all_codes(100023))
