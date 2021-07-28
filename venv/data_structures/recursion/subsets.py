@@ -28,8 +28,6 @@ output =  [[],
            [9, 12, 15]]
 """
 
-from functools import reduce
-
 MAIN, NL = '__main__', '\n'
 
 
@@ -44,7 +42,7 @@ def subsets(l):
     first, rest = l[0], subsets(l[1:])
     return sorted(
                     [sub for sub in rest] +
-                    [[first] + sub for sub in rest], key=len
+                    [[first] + sub for sub in rest], key=lambda x: (len(x), x)
                  )
 
 
